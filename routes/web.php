@@ -27,5 +27,10 @@ Route::controller(loginregis::class)->group(function() {
     Route::get('/dashboard', 'dashboard')->name('dashboard');
     Route::get('/users', 'users')->name('users');
     Route::post('/logout', 'logout')->name('logout');
-   });
+    Route::put('/update-profile/{id}', 'updateProfile')->name('update-profile');
+    Route::get('/edit-profile/{id}', 'editProfile')->name('edit-profile');
+    
+    
+    
+});
    

@@ -15,7 +15,7 @@ class loginregis extends Controller
 {
     public  function __construct()
     {
-        $this->middleware('guest')->except(['logout', 'dashboard']);
+        $this->middleware('web')->except(['logout', 'dashboard']);
     }
 
     public function register()
@@ -94,7 +94,32 @@ class loginregis extends Controller
         return redirect()->route('login')
         ->withSuccess("You have logged out");
     }
-    
+
+    public function editProfile($id)
+    {
+        $user = User::find($id);
+        return view('editprofile', compact('user'));
+    }
+
+    public function updateProfile(Request $request, $id)
+{
+    $user = User::find($id);
+
+    $request->validate([
+        'photo' => 'image|nullable|max:1999'
+    ]);
+
+    if ($request->hasFile('photo')) {
+        $fileName = time() . '.' . $request->file('photo')->getClientOriginalExtension();
+        $request->file('photo')->storeAs('public/photos', $fileName);
+        $user->photo = $fileName;
+    }
+
+    // Simpan perubahan atribut lain yang ingin diedit
+    $user->save();
+
+    return redirect()->route('dashboard')->withSuccess("Profil berhasil diperbarui");
+}
 
 
 }
