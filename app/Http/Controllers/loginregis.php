@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; 
 use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+
 
 class loginregis extends Controller
 {
@@ -36,7 +38,7 @@ class loginregis extends Controller
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('photo')->getClientOriginalExtension();
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-            $path = $request->file('photo')->storeAs('public/photos', $fileNameToStore);
+            $path = $request->file('photo')->storeAs('storage/photos/', $fileNameToStore);
         }else{
            //
         }
@@ -101,18 +103,66 @@ class loginregis extends Controller
         return view('editprofile', compact('user'));
     }
 
-    public function updateProfile(Request $request, $id)
+//     public function updateProfile(Request $request, $id){
+//     $user = User::find($id);
+
+//     $request->validate([
+//         'photo' => 'image|nullable|max:1999'
+//     ]);
+
+//     if ($request->hasFile('photo')) {
+//         $fileName = time() . '.' . $request->file('photo')->getClientOriginalExtension();
+//         $request->file('photo')->storeAs('public/photos', $fileName);
+//         $user->photo = $fileName;
+//     }
+
+//     // Simpan perubahan atribut lain yang ingin diedit
+//     $user->save();
+
+//     return redirect()->route('dashboard')->withSuccess("Profil berhasil diperbarui");
+// }
+public function updateProfile(Request $request, $id)
 {
     $user = User::find($id);
 
     $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'password' => 'nullable|string|min:6',
         'photo' => 'image|nullable|max:1999'
     ]);
 
+    $user->name = $request->input('name');
+    $user->email = $request->input('email');
+
+    if ($request->has('password')) {
+        $user->password = Hash::make($request->input('password'));
+    }
+
     if ($request->hasFile('photo')) {
         $fileName = time() . '.' . $request->file('photo')->getClientOriginalExtension();
-        $request->file('photo')->storeAs('public/photos', $fileName);
+        $request->file('photo')->storeAs('storage/photos/', $fileName);
+
+        // Resize dan simpan gambar asli
+        $image = Image::make($request->file('photo')->getRealPath());
+        $image->stream();
+        $image->save(public_path('storage/photos/' . $fileName));
+
+        // Resize dan simpan thumbnail
+        $thumbnail = Image::make($request->file('photo')->getRealPath());
+        $thumbnail->resize(150, 100); // Ubah ukuran sesuai kebutuhan
+        $thumbnailFileName = time() . '_thumbnail.' . $request->file('photo')->getClientOriginalExtension();
+        $thumbnail->save(public_path('storage/photos/' . $thumbnailFileName));
+
+        // Resize dan simpan gambar persegi
+        $square = Image::make($request->file('photo')->getRealPath());
+        $square->fit(150, 150); // Ubah ukuran sesuai kebutuhan
+        $squareFileName = time() . '_square.' . $request->file('photo')->getClientOriginalExtension();
+        $square->save(public_path('storage/photos/' . $squareFileName));
+
         $user->photo = $fileName;
+        $user->thumbnail = $thumbnail->basename;
+        $user->square = $square->basename;
     }
 
     // Simpan perubahan atribut lain yang ingin diedit
@@ -120,6 +170,36 @@ class loginregis extends Controller
 
     return redirect()->route('dashboard')->withSuccess("Profil berhasil diperbarui");
 }
+
+public function deletePhotos($id)
+{
+    $user = User::find($id);
+
+    if ($user->photo) {
+        // Hapus gambar asli dari penyimpanan
+        Storage::delete('storage/photos/' . $user->photo);
+        $user->photo = null;
+    }
+
+    if ($user->thumbnail) {
+        // Hapus gambar thumbnail dari penyimpanan
+        Storage::delete('storage/photos/' . $user->thumbnail);
+        $user->thumbnail = null;
+    }
+
+    if ($user->square) {
+        // Hapus gambar persegi dari penyimpanan
+        Storage::delete('storage/photos/' . $user->square);
+        $user->square = null;
+    }
+
+    $user->save();
+
+    return redirect()->back()->with('success', 'Gambar berhasil dihapus.');
+}
+
+
+
 
 
 }

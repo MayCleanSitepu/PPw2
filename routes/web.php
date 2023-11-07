@@ -29,8 +29,9 @@ Route::controller(loginregis::class)->group(function() {
     Route::post('/logout', 'logout')->name('logout');
     Route::put('/update-profile/{id}', 'updateProfile')->name('update-profile');
     Route::get('/edit-profile/{id}', 'editProfile')->name('edit-profile');
-    
-    
-    
+    Route::delete('/delete-photos/{id}', 'deletePhotos')->name('delete-photos');
+
+
+ 
 });
    
