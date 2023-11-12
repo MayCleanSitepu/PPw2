@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\loginregis;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GalleryController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +32,7 @@ Route::controller(loginregis::class)->group(function() {
     Route::put('/update-profile/{id}', 'updateProfile')->name('update-profile');
     Route::get('/edit-profile/{id}', 'editProfile')->name('edit-profile');
     Route::delete('/delete-photos/{id}', 'deletePhotos')->name('delete-photos');
-
-
  
 });
-   
+
+Route::resource('gallery', GalleryController::class);
