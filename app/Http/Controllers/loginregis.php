@@ -146,7 +146,7 @@ public function updateProfile(Request $request, $id)
         // Resize dan simpan gambar asli
         $image = Image::make($request->file('photo')->getRealPath());
         $image->stream();
-        $image->save(public_path('storage/photos/' . $fileName));
+        $image->save('public/storage/photos/' . $fileName);
 
         // Resize dan simpan thumbnail
         $thumbnail = Image::make($request->file('photo')->getRealPath());

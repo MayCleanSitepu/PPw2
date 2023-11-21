@@ -24,4 +24,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/info', [InfoController::class, 'index'])->name('info');
 Route::get('/greet', [GreetController::class,'greet'])->name('greet');
-Route::get('/shows', [GreetController::class,'getGallery'])->name('apigaleri');
+Route::get('/getPic', [GreetController::class,'getPic'])->name('apiGetPic');
+Route::post('/postPic', [GreetController::class,'storePic'])->name('apiPostPic');

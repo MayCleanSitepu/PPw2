@@ -6,29 +6,35 @@
             <div class="card-header">Dashboard</div>
             <div class="card-body">
                 <div class="row">
-                @if(count($galleries)>0)
-                @foreach ($galleries as $gallery)
+                    @if(count($galleries)>0)
+                    @foreach ($galleries as $gallery)
                     <div class="col-sm-2">
                         <div>
-                            <a class="example-image-link " href="{{asset('storage/posts_image/'.$gallery->picture )}}" data-lightbox="roadtrip" data-title="{{$gallery->description}}">
-                                <img class="example-image img-fluid mb-2" src="{{asset('storage/posts_image/'.$gallery->picture )}}" alt="image-1" />
-                                <a href="{{ route('gallery.edit', ['gallery' => $gallery->id]) }}" enctype="multipart/form-data" class="btn btn-warning">Edit</a>
-                                <form method="POST" action="{{ route('gallery.destroy', ['gallery' => $gallery->id]) }}" enctype="multipart/form-data">
-                                    @csrf
-                                    @method('DELETE')
+                            <a class="example-image-link"
+                                href="{{ asset('storage/posts_image/' . $gallery['picture']) }}"
+                                data-lightbox="roadtrip" data-title="{{ $gallery['description'] }}">
+                                <img class="example-image img-fluid mb-2"
+                                    src="{{ asset('storage/posts_image/' . $gallery['picture']) }}" alt="image-1" />
+                            </a>
+                            <a href="{{ route('gallery.edit', $gallery['id']) }}" enctype="multipart/form-data"
+                                class="btn btn-warning">Edit</a>
+                            <form method="POST" action="{{ route('gallery.destroy', $gallery['id']) }}"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('DELETE')
 
-                                    <button type="submit" class="btn btn-danger">Hapus</button>
-                                </form>
+                                <button type="submit" class="btn btn-danger">Hapus</button>
+                            </form>
 
                             </a>
                         </div>
                     </div>
-                @endforeach
-                @else
-                <h3>Tidak ada data.</h3>
-                @endif
+                    @endforeach
+                    @else
+                    <h3>Tidak ada data.</h3>
+                    @endif
                     <div class="d-flex">
-                    {{ $galleries->links() }}
+
                     </div>
                 </div>
             </div>
@@ -37,5 +43,5 @@
 </div>
 
 <a href="{{ route('gallery.create') }}" enctype="multipart/form-data" class="btn btn-primary">Add</a>
-<!-- <a href="{{ route('gallery.destroy', ['gallery' => $gallery->id]) }}" enctype="multipart/form-data" class="btn btn-primary">delete</a> -->
+
 @endsection
