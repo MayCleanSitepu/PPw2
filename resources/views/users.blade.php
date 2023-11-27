@@ -20,21 +20,21 @@
                 <td>{{ $user->email }}</td>
                 <td>
                     @if ($user->photo)
-                        <img src="{{ asset('storage/photos/' . $user->photo) }}" width="500px" height="300px" alt="Original Photo">
+                        <img src="{{ asset('storage/' . $user->photo) }}" width="500px" height="300px" alt="Original Photo">
                     @else
                         No Photo
                     @endif
                 </td>
                 <td>
                     @if ($user->thumbnail)
-                        <img src="{{ asset('storage/photos/' . $user->thumbnail) }}" alt="Thumbnail">
+                        <img src="{{ asset('storage/' . $user->thumbnail) }}" alt="Thumbnail">
                     @else
                         No Thumbnail
                     @endif
                 </td>
                 <td>
                     @if ($user->square)
-                        <img src="{{ asset('storage/photos/' . $user->square) }}" alt="Square Photo">
+                        <img src="{{ asset('storage/' . $user->square) }}" alt="Square Photo">
                     @else
                         No Square Photo
                     @endif

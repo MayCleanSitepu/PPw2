@@ -27,7 +27,7 @@ class GalleryController extends Controller
     public function index()
 {
     // Mengambil data dari API
-    $response = Http::get('http://127.0.0.1:8001/api/getPic');
+    $response = Http::get('http://localhost/api/getPic');
 
     if ($response->failed()) {
         return response()->json(['error' => 'Gagal mengambil data melalui API'], 500);
@@ -47,7 +47,7 @@ class GalleryController extends Controller
             'picture' => 'image|nullable|max:1999'
         ]);
 
-        $response = Http::post('http://127.0.0.1:8001/api/postPic', [
+        $response = Http::post('http://localhost/api/postPic', [
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'image' => $request->file('picture')
