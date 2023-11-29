@@ -3,6 +3,8 @@
 use App\Http\Controllers\loginregis;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SendEmailController;
 
 
 /*
@@ -16,9 +18,7 @@ use App\Http\Controllers\GalleryController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', function () {return view('cv');});
 
 
 Route::controller(loginregis::class)->group(function() {
@@ -36,3 +36,9 @@ Route::controller(loginregis::class)->group(function() {
 });
 
 Route::resource('gallery', GalleryController::class);
+
+Route::get('/users', [UserController::class, 'index'])->name('users');
+Route::get('/send-mail', [SendEmailController::class, 'index'])->name('kirim-email');
+Route::post('/post-email', [SendEmailController::class, 'store'])->name('post-email');
+
+Route::get('/cv', [loginregis::class, 'cvs'])->name('cv');

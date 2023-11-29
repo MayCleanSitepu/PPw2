@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; 
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
 
 
 class loginregis extends Controller
@@ -33,12 +35,14 @@ class loginregis extends Controller
             'photo' => 'image|nullable|max:1999'
         ]);
 
+        $path = ''; 
+
         if($request->hasFile('photo')){
             $filenameWithExt = $request->file('photo')->getClientOriginalName();
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('photo')->getClientOriginalExtension();
             $fileNameToStore = $filename.'_'.time().'.'.$extension;
-            $path = $request->file('photo')->storeAs('storage/photos/', $fileNameToStore);
+            $path = $request->file('photo')->storeAs('public/storage/photos/', $fileNameToStore);
         }else{
            //
         }
@@ -49,6 +53,12 @@ class loginregis extends Controller
             'password'=> hash::make($request->password),
             'photo' => $path
         ]);
+
+        $content = [
+            'subject' => $request->name,
+            'body' => $request->email
+        ];
+        Mail::to($request->email)->send(new SendEmail($content));
 
         $credentials = $request->only('email','password');
         Auth::attempt($credentials);
@@ -141,7 +151,7 @@ public function updateProfile(Request $request, $id)
 
     if ($request->hasFile('photo')) {
         $fileName = time() . '.' . $request->file('photo')->getClientOriginalExtension();
-        $request->file('photo')->storeAs('storage/photos/', $fileName);
+        $request->file('photo')->storeAs('public\storage/photos/', $fileName);
 
         // Resize dan simpan gambar asli
         $image = Image::make($request->file('photo')->getRealPath());
@@ -152,13 +162,13 @@ public function updateProfile(Request $request, $id)
         $thumbnail = Image::make($request->file('photo')->getRealPath());
         $thumbnail->resize(150, 100); // Ubah ukuran sesuai kebutuhan
         $thumbnailFileName = time() . '_thumbnail.' . $request->file('photo')->getClientOriginalExtension();
-        $thumbnail->save(public_path('storage/photos/' . $thumbnailFileName));
+        $thumbnail->save(public_path('public/storage/photos/' . $thumbnailFileName));
 
         // Resize dan simpan gambar persegi
         $square = Image::make($request->file('photo')->getRealPath());
         $square->fit(150, 150); // Ubah ukuran sesuai kebutuhan
         $squareFileName = time() . '_square.' . $request->file('photo')->getClientOriginalExtension();
-        $square->save(public_path('storage/photos/' . $squareFileName));
+        $square->save(public_path('public/storage/photos/' . $squareFileName));
 
         $user->photo = $fileName;
         $user->thumbnail = $thumbnail->basename;
@@ -198,8 +208,9 @@ public function deletePhotos($id)
     return redirect()->back()->with('success', 'Gambar berhasil dihapus.');
 }
 
+    public function cvs()
+        {
+            return view("cv");
 
-
-
-
+        }
 }
